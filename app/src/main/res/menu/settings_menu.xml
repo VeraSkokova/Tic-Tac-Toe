@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/field_size"
+        android:title="@string/field_size" />
+
+    <item
+        android:id="@+id/game_mode"
+        android:title="@string/game_mode" />
+</menu>
