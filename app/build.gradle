@@ -33,4 +33,9 @@ dependencies {
     /*ButterKnife*/
     implementation 'com.jakewharton:butterknife:9.0.0-rc2'
     annotationProcessor 'com.jakewharton:butterknife-compiler:9.0.0-rc2'
+
+    /*Logback & SLF4J*/
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.0.9'
+    compile group: 'ch.qos.logback', name: 'logback-core', version: '1.0.9'
+    compile 'org.slf4j:slf4j-api:1.7.21'
 }

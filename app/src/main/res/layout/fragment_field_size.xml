@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/field_size_fragment_margin"
+        android:text="@string/field_message"
+        android:textColor="@color/dialogTextColor"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <NumberPicker
+        android:id="@+id/field_size_picker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/field_size_fragment_margin"
+        app:layout_constraintLeft_toLeftOf="@id/message"
+        app:layout_constraintRight_toRightOf="@id/message"
+        app:layout_constraintTop_toBottomOf="@id/message" />
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/ok_field_size_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/ok"
+        android:textColor="@color/dialogTextColor"
+        app:layout_constraintEnd_toStartOf="@+id/cancel_field_size_button"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/field_size_picker" />
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/cancel_field_size_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/cancel_message"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/ok_field_size_button"
+        app:layout_constraintTop_toBottomOf="@id/field_size_picker" />
+
+
+</android.support.constraint.ConstraintLayout>

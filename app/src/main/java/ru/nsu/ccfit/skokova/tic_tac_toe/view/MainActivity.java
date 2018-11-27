@@ -3,6 +3,7 @@ package ru.nsu.ccfit.skokova.tic_tac_toe.view;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageButton;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -11,23 +12,18 @@ import android.view.View;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.nsu.ccfit.skokova.tic_tac_toe.R;
-import ru.nsu.ccfit.skokova.tic_tac_toe.presenter.GamePresenter;
+import ru.nsu.ccfit.skokova.tic_tac_toe.presenter.MainPresenter;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MainView {
     private static final int DEFAULT_SIZE = 3;
 
     @BindView(R.id.game_panel)
     TableLayout gamePanel;
 
-    private List<AppCompatImageButton> cellButtons = new ArrayList<>(DEFAULT_SIZE * DEFAULT_SIZE);
-
-    private GamePresenter gamePresenter;
+    private MainPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +31,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        drawField();
+        attachPresenter();
+
+        drawField(DEFAULT_SIZE);
+        Log.d("debug", "onCreate");
     }
 
     @Override
@@ -50,7 +49,10 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.field_size:
-                //...
+                FieldSizeDialogFragment fieldSizeDialogFragment
+                        = new FieldSizeDialogFragment();
+                fieldSizeDialogFragment.setPresenter(presenter);
+                fieldSizeDialogFragment.show(getSupportFragmentManager(), "FIELD_SIZE_DIALOG");
                 return true;
             case R.id.game_mode:
                 //...
@@ -60,11 +62,36 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void drawField() {
-        for (int i = 0; i < DEFAULT_SIZE; i++) { //TODO : fix size
+    @Override
+    public void changeSize(int size) {
+        gamePanel.removeAllViews();
+        drawField(size);
+    }
+
+    @Override
+    public Object onRetainCustomNonConfigurationInstance() {
+        return presenter;
+    }
+
+    @Override
+    protected void onDestroy() {
+        presenter.detachView();
+        super.onDestroy();
+    }
+
+    private void attachPresenter() {
+        presenter = (MainPresenter) getLastNonConfigurationInstance();
+        if (presenter == null) {
+            presenter = new MainPresenter();
+        }
+        presenter.attachView(this);
+    }
+
+    private void drawField(int size) {
+        for (int i = 0; i < size; i++) { //TODO : fix size
             TableRow tableRow = new TableRow(this);
 
-            for (int j = 0; j < DEFAULT_SIZE; j++) {
+            for (int j = 0; j < size; j++) {
                 LayoutInflater layoutInflater = getLayoutInflater();
                 final View view = layoutInflater.inflate(R.layout.cell_button, null);
                 AppCompatImageButton cellButton = view.findViewById(R.id.cell);
