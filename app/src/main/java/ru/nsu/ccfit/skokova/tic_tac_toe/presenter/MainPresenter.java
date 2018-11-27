@@ -8,8 +8,8 @@ public class MainPresenter {
     private Game game;
 
     public MainPresenter() {
-        this.game = new Game(3);
-        this.game.setPresenter(this);
+        game = new Game(3);
+        game.setPresenter(this);
     }
 
     public void attachView(MainView mainView) {
@@ -21,10 +21,18 @@ public class MainPresenter {
     }
 
     public void onSizeChanged(int size) {
-        view.changeSize(size);
+        view.drawNewField(size);
     }
 
     public void changeFieldSize(int newSize) {
         game.changeSize(newSize);
+    }
+
+    public void performStep(int x, int y) {
+        game.performUserStep(x, y);
+    }
+
+    public void onUserStep(int cellX, int cellY) {
+        view.showUserStep(cellX, cellY);
     }
 }

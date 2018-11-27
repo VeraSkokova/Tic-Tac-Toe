@@ -25,6 +25,8 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
     private MainPresenter presenter;
 
+    private AppCompatImageButton[][] buttons;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,9 +65,14 @@ public class MainActivity extends AppCompatActivity implements MainView {
     }
 
     @Override
-    public void changeSize(int size) {
+    public void drawNewField(int size) {
         gamePanel.removeAllViews();
         drawField(size);
+    }
+
+    @Override
+    public void showUserStep(int cellX, int cellY) {
+        buttons[cellX][cellY].setImageResource(R.drawable.ic_cross_black_24dp);
     }
 
     @Override
@@ -88,17 +95,27 @@ public class MainActivity extends AppCompatActivity implements MainView {
     }
 
     private void drawField(int size) {
-        for (int i = 0; i < size; i++) { //TODO : fix size
+        buttons = new AppCompatImageButton[size][size];
+
+        for (int i = 0; i < size; i++) {
             TableRow tableRow = new TableRow(this);
 
             for (int j = 0; j < size; j++) {
                 LayoutInflater layoutInflater = getLayoutInflater();
                 final View view = layoutInflater.inflate(R.layout.cell_button, null);
                 AppCompatImageButton cellButton = view.findViewById(R.id.cell);
+                int x = i;
+                int y = j;
+                cellButton.setOnClickListener(v -> onCellClicked(x, y));
+                buttons[x][y] = cellButton;
                 tableRow.addView(cellButton, j);
             }
 
             gamePanel.addView(tableRow, i);
         }
+    }
+
+    private void onCellClicked(int x, int y) {
+        presenter.performStep(x, y);
     }
 }
