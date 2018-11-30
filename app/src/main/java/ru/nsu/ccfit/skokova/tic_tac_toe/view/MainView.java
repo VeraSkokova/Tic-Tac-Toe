@@ -4,4 +4,6 @@ public interface MainView {
     void drawNewField(int size);
 
     void showUserStep(int cellX, int cellY);
+
+    void showComputerStep(int cellX, int cellY);
 }

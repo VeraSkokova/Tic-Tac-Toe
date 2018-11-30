@@ -4,7 +4,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "ru.nsu.ccfit.skokova.tic_tac_toe"
-        minSdkVersion 15
+        minSdkVersion 19
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -38,4 +38,7 @@ dependencies {
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.0.9'
     compile group: 'ch.qos.logback', name: 'logback-core', version: '1.0.9'
     compile 'org.slf4j:slf4j-api:1.7.21'
+
+    /*Lightweight-Stream-API (to support android api versions older than 24)*/
+    implementation 'com.annimon:stream:1.2.1'
 }

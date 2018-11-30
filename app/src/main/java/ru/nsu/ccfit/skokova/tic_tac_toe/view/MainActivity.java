@@ -3,7 +3,6 @@ package ru.nsu.ccfit.skokova.tic_tac_toe.view;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageButton;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,8 +17,6 @@ import ru.nsu.ccfit.skokova.tic_tac_toe.R;
 import ru.nsu.ccfit.skokova.tic_tac_toe.presenter.MainPresenter;
 
 public class MainActivity extends AppCompatActivity implements MainView {
-    private static final int DEFAULT_SIZE = 3;
-
     @BindView(R.id.game_panel)
     TableLayout gamePanel;
 
@@ -35,8 +32,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
         attachPresenter();
 
-        drawField(DEFAULT_SIZE);
-        Log.d("debug", "onCreate");
+        presenter.viewIsReady();
     }
 
     @Override
@@ -73,6 +69,11 @@ public class MainActivity extends AppCompatActivity implements MainView {
     @Override
     public void showUserStep(int cellX, int cellY) {
         buttons[cellX][cellY].setImageResource(R.drawable.ic_cross_black_24dp);
+    }
+
+    @Override
+    public void showComputerStep(int cellX, int cellY) {
+        buttons[cellX][cellY].setImageResource(R.drawable.ic_circle_black_24dp);
     }
 
     @Override
