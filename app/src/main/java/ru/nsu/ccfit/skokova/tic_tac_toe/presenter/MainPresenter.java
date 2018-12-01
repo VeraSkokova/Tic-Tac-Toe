@@ -44,4 +44,16 @@ public class MainPresenter {
     public void onComputerStep(Cell cell) {
         view.showComputerStep(cell.getCellX(), cell.getCellY());
     }
+
+    public void onUserWin() {
+        view.showUserWin();
+    }
+
+    public void onComputerWin() {
+        view.showComputerWin();
+    }
+
+    public void onDraw() {
+        view.showDraw();
+    }
 }

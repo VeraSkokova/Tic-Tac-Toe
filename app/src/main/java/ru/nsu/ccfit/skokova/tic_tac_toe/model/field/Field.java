@@ -20,17 +20,6 @@ public class Field {
         }
     }
 
-    public boolean userStep(int cellX, int cellY) {
-        Cell cell = cells.get(cellX * size + cellY);
-
-        if (cell.getCellState() != CellState.UNDEFINED) {
-            return false;
-        }
-
-        cell.setCellState(CellState.CROSS);
-        return true;
-    }
-
     public int getSize() {
         return size;
     }

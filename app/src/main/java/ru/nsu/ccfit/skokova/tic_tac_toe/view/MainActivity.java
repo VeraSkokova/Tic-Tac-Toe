@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -77,6 +78,21 @@ public class MainActivity extends AppCompatActivity implements MainView {
     }
 
     @Override
+    public void showUserWin() {
+        showToast("You won!!!");
+    }
+
+    @Override
+    public void showComputerWin() {
+        showToast("You loose:(");
+    }
+
+    @Override
+    public void showDraw() {
+        showToast("Draw");
+    }
+
+    @Override
     public Object onRetainCustomNonConfigurationInstance() {
         return presenter;
     }
@@ -118,5 +134,9 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
     private void onCellClicked(int x, int y) {
         presenter.performStep(x, y);
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }
