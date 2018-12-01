@@ -1,7 +1,7 @@
 package ru.nsu.ccfit.skokova.tic_tac_toe.presenter;
 
-import ru.nsu.ccfit.skokova.tic_tac_toe.model.Game;
 import ru.nsu.ccfit.skokova.tic_tac_toe.model.field.Cell;
+import ru.nsu.ccfit.skokova.tic_tac_toe.model.game.Game;
 import ru.nsu.ccfit.skokova.tic_tac_toe.view.MainView;
 
 public class MainPresenter {

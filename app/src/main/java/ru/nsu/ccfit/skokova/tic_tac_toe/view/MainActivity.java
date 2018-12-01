@@ -10,7 +10,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TableLayout;
 import android.widget.TableRow;
-import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -18,6 +17,7 @@ import ru.nsu.ccfit.skokova.tic_tac_toe.R;
 import ru.nsu.ccfit.skokova.tic_tac_toe.presenter.MainPresenter;
 
 public class MainActivity extends AppCompatActivity implements MainView {
+    public static final String MSG_KEY = "FINISH";
     @BindView(R.id.game_panel)
     TableLayout gamePanel;
 
@@ -79,17 +79,17 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
     @Override
     public void showUserWin() {
-        showToast("You won!!!");
+        showGameFinishDialog("You won!!!");
     }
 
     @Override
     public void showComputerWin() {
-        showToast("You loose:(");
+        showGameFinishDialog("You loose:(");
     }
 
     @Override
     public void showDraw() {
-        showToast("Draw");
+        showGameFinishDialog("Draw");
     }
 
     @Override
@@ -136,7 +136,13 @@ public class MainActivity extends AppCompatActivity implements MainView {
         presenter.performStep(x, y);
     }
 
-    private void showToast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    private void showGameFinishDialog(String message) {
+        GameFinishDialogFragment gameFinishDialogFragment = new GameFinishDialogFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putString(MSG_KEY, message);
+        gameFinishDialogFragment.setArguments(bundle);
+
+        gameFinishDialogFragment.show(getSupportFragmentManager(), "GAME_FINISH_DIALOG");
     }
 }

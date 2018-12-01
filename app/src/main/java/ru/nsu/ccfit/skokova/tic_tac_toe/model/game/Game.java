@@ -1,4 +1,4 @@
-package ru.nsu.ccfit.skokova.tic_tac_toe.model;
+package ru.nsu.ccfit.skokova.tic_tac_toe.model.game;
 
 import ru.nsu.ccfit.skokova.tic_tac_toe.model.field.Cell;
 import ru.nsu.ccfit.skokova.tic_tac_toe.model.field.Field;
