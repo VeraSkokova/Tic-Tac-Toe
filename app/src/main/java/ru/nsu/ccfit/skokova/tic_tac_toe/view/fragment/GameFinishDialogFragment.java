@@ -1,4 +1,4 @@
-package ru.nsu.ccfit.skokova.tic_tac_toe.view;
+package ru.nsu.ccfit.skokova.tic_tac_toe.view.fragment;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 
 import ru.nsu.ccfit.skokova.tic_tac_toe.R;
+import ru.nsu.ccfit.skokova.tic_tac_toe.view.activity.MainActivity;
 
 public class GameFinishDialogFragment extends DialogFragment {
     private String finishMessage;

@@ -1,4 +1,4 @@
-package ru.nsu.ccfit.skokova.tic_tac_toe.view;
+package ru.nsu.ccfit.skokova.tic_tac_toe.view.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;

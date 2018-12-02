@@ -1,4 +1,4 @@
-package ru.nsu.ccfit.skokova.tic_tac_toe.view;
+package ru.nsu.ccfit.skokova.tic_tac_toe.view.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +15,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.nsu.ccfit.skokova.tic_tac_toe.R;
 import ru.nsu.ccfit.skokova.tic_tac_toe.presenter.MainPresenter;
+import ru.nsu.ccfit.skokova.tic_tac_toe.view.MainView;
+import ru.nsu.ccfit.skokova.tic_tac_toe.view.fragment.FieldSizeDialogFragment;
+import ru.nsu.ccfit.skokova.tic_tac_toe.view.fragment.GameFinishDialogFragment;
 
 public class MainActivity extends AppCompatActivity implements MainView {
     public static final String MSG_KEY = "FINISH";
