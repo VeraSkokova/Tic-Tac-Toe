@@ -1,16 +1,20 @@
 package ru.nsu.ccfit.skokova.tic_tac_toe.model.game;
 
+import java.util.List;
+
+import ru.nsu.ccfit.skokova.tic_tac_toe.model.Updater;
 import ru.nsu.ccfit.skokova.tic_tac_toe.model.field.Cell;
 import ru.nsu.ccfit.skokova.tic_tac_toe.model.field.Field;
 import ru.nsu.ccfit.skokova.tic_tac_toe.model.player.ComputerPlayer;
 import ru.nsu.ccfit.skokova.tic_tac_toe.model.player.ComputerStrategy;
 import ru.nsu.ccfit.skokova.tic_tac_toe.model.player.UserPlayer;
-import ru.nsu.ccfit.skokova.tic_tac_toe.presenter.MainPresenter;
+import ru.nsu.ccfit.skokova.tic_tac_toe.model.statistics.RecordAuthor;
+import ru.nsu.ccfit.skokova.tic_tac_toe.presenter.GamePresenter;
 
 public class Game {
     private static final int DEFAULT_SIZE = 3;
 
-    private MainPresenter presenter;
+    private GamePresenter presenter;
 
     private Field field;
 
@@ -21,6 +25,8 @@ public class Game {
 
     private boolean isRunning;
 
+    private Updater updater;
+
     public Game() {
         field = new Field(DEFAULT_SIZE);
         field.init();
@@ -30,6 +36,8 @@ public class Game {
         computerPlayer.setPlayerStrategy(new ComputerStrategy());
 
         judge = new Judge(field.getSize());
+
+        updater = new RecordsUpdater();
 
         isRunning = true;
     }
@@ -44,7 +52,17 @@ public class Game {
 
         judge = new Judge(fieldSize);
 
+        updater = new RecordsUpdater();
+
         isRunning = true;
+    }
+
+    public void startOrContinue() {
+        if (isRunning) {
+            changeField(DEFAULT_SIZE);
+        } else {
+            changeField(DEFAULT_SIZE);
+        }
     }
 
     public void changeField(int newSize) {
@@ -61,7 +79,7 @@ public class Game {
         presenter.onSizeChanged(newSize);
     }
 
-    public void setPresenter(MainPresenter presenter) {
+    public void setPresenter(GamePresenter presenter) {
         this.presenter = presenter;
     }
 
@@ -98,8 +116,13 @@ public class Game {
         }
     }
 
+    public List<Cell> getCells() {
+        return field.getCellsList();
+    }
+
     private void computerWins() {
         isRunning = false;
+        updater.updateRecord(RecordAuthor.COMPUTER);
         presenter.onComputerWin();
     }
 
@@ -110,6 +133,7 @@ public class Game {
 
     private void userWins() {
         isRunning = false;
+        updater.updateRecord(RecordAuthor.USER);
         presenter.onUserWin();
     }
 }

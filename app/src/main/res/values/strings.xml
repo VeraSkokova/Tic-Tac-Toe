@@ -8,4 +8,6 @@
     <string name="cancel_message">Cancel</string>
     <string name="game">Game</string>
     <string name="statistics">Statistics</string>
+    <string name="wins_by_computer">Wins by computer</string>
+    <string name="wins_by_user">Wins by user</string>
 </resources>

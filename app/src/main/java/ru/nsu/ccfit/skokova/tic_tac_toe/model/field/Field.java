@@ -1,6 +1,7 @@
 package ru.nsu.ccfit.skokova.tic_tac_toe.model.field;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Field {
@@ -62,5 +63,9 @@ public class Field {
 
     public boolean isCellInField(int cellX, int cellY) {
         return cellX >= 0 && cellX < size && cellY >= 0 && cellY < size;
+    }
+
+    public List<Cell> getCellsList() {
+        return Collections.unmodifiableList(cells);
     }
 }

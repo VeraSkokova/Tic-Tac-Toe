@@ -1,32 +1,36 @@
 package ru.nsu.ccfit.skokova.tic_tac_toe.view.activity;
 
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatImageButton;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ru.nsu.ccfit.skokova.tic_tac_toe.R;
-import ru.nsu.ccfit.skokova.tic_tac_toe.presenter.MainPresenter;
-import ru.nsu.ccfit.skokova.tic_tac_toe.view.MainView;
+import ru.nsu.ccfit.skokova.tic_tac_toe.presenter.GamePresenter;
+import ru.nsu.ccfit.skokova.tic_tac_toe.presenter.PresenterHolder;
+import ru.nsu.ccfit.skokova.tic_tac_toe.presenter.StatisticsPresenter;
 import ru.nsu.ccfit.skokova.tic_tac_toe.view.fragment.FieldSizeDialogFragment;
-import ru.nsu.ccfit.skokova.tic_tac_toe.view.fragment.GameFinishDialogFragment;
+import ru.nsu.ccfit.skokova.tic_tac_toe.view.fragment.GameFragment;
+import ru.nsu.ccfit.skokova.tic_tac_toe.view.fragment.StatisticsFragment;
 
-public class MainActivity extends AppCompatActivity implements MainView {
+public class MainActivity extends AppCompatActivity {
     public static final String MSG_KEY = "FINISH";
-    @BindView(R.id.game_panel)
-    TableLayout gamePanel;
 
-    private MainPresenter presenter;
+    @BindView(R.id.main_layout)
+    DrawerLayout drawerLayout;
 
-    private AppCompatImageButton[][] buttons;
+    @BindView(R.id.nav_view)
+    NavigationView navigationView;
+
+    private PresenterHolder presenterHolder;
+
+    private GameFragment gameFragment;
+    private StatisticsFragment statisticsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,9 +38,19 @@ public class MainActivity extends AppCompatActivity implements MainView {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        navigationView.setNavigationItemSelectedListener(this::navigate);
+
+        gameFragment = new GameFragment();
+        statisticsFragment = new StatisticsFragment();
+
         attachPresenter();
 
-        presenter.viewIsReady();
+        gameFragment.setPresenter(presenterHolder.getGamePresenter());
+        statisticsFragment.setPresenter(presenterHolder.getStatisticsPresenter());
+
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.fragment_container, gameFragment)
+                .commit();
     }
 
     @Override
@@ -53,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
             case R.id.field_size:
                 FieldSizeDialogFragment fieldSizeDialogFragment
                         = new FieldSizeDialogFragment();
-                fieldSizeDialogFragment.setPresenter(presenter);
+                fieldSizeDialogFragment.setPresenter(presenterHolder.getGamePresenter());
                 fieldSizeDialogFragment.show(getSupportFragmentManager(), "FIELD_SIZE_DIALOG");
                 return true;
             case R.id.game_mode:
@@ -65,87 +79,38 @@ public class MainActivity extends AppCompatActivity implements MainView {
     }
 
     @Override
-    public void drawNewField(int size) {
-        gamePanel.removeAllViews();
-        drawField(size);
-    }
-
-    @Override
-    public void showUserStep(int cellX, int cellY) {
-        buttons[cellX][cellY].setImageResource(R.drawable.ic_cross_black_24dp);
-    }
-
-    @Override
-    public void showComputerStep(int cellX, int cellY) {
-        buttons[cellX][cellY].setImageResource(R.drawable.ic_circle_black_24dp);
-    }
-
-    @Override
-    public void showUserWin() {
-        showGameFinishDialog("You won!!!");
-    }
-
-    @Override
-    public void showComputerWin() {
-        showGameFinishDialog("You loose:(");
-    }
-
-    @Override
-    public void showDraw() {
-        showGameFinishDialog("Draw");
-    }
-
-    @Override
     public Object onRetainCustomNonConfigurationInstance() {
-        return presenter;
-    }
-
-    @Override
-    protected void onDestroy() {
-        presenter.detachView();
-        super.onDestroy();
+        return presenterHolder;
     }
 
     private void attachPresenter() {
-        presenter = (MainPresenter) getLastNonConfigurationInstance();
-        if (presenter == null) {
-            presenter = new MainPresenter();
+        presenterHolder = (PresenterHolder) getLastNonConfigurationInstance();
+        if (presenterHolder == null) {
+            presenterHolder = new PresenterHolder();
         }
-        presenter.attachView(this);
+        GamePresenter gamePresenter = presenterHolder.getGamePresenter();
+        StatisticsPresenter statisticsPresenter = presenterHolder.getStatisticsPresenter();
+
+        gamePresenter.attachView(gameFragment);
+        statisticsPresenter.attachView(statisticsFragment);
     }
 
-    private void drawField(int size) {
-        buttons = new AppCompatImageButton[size][size];
-
-        for (int i = 0; i < size; i++) {
-            TableRow tableRow = new TableRow(this);
-
-            for (int j = 0; j < size; j++) {
-                LayoutInflater layoutInflater = getLayoutInflater();
-                final View view = layoutInflater.inflate(R.layout.cell_button, null);
-                AppCompatImageButton cellButton = view.findViewById(R.id.cell);
-                int x = i;
-                int y = j;
-                cellButton.setOnClickListener(v -> onCellClicked(x, y));
-                buttons[x][y] = cellButton;
-                tableRow.addView(cellButton, j);
-            }
-
-            gamePanel.addView(tableRow, i);
+    private boolean navigate(MenuItem menuItem) {
+        menuItem.setChecked(true);
+        drawerLayout.closeDrawers();
+        switch (menuItem.getItemId()) {
+            case R.id.menu_game:
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, gameFragment)
+                        .commit();
+                return true;
+            case R.id.menu_stats:
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, statisticsFragment)
+                        .commit();
+                return true;
+            default:
+                return false;
         }
-    }
-
-    private void onCellClicked(int x, int y) {
-        presenter.performStep(x, y);
-    }
-
-    private void showGameFinishDialog(String message) {
-        GameFinishDialogFragment gameFinishDialogFragment = new GameFinishDialogFragment();
-
-        Bundle bundle = new Bundle();
-        bundle.putString(MSG_KEY, message);
-        gameFinishDialogFragment.setArguments(bundle);
-
-        gameFinishDialogFragment.show(getSupportFragmentManager(), "GAME_FINISH_DIALOG");
     }
 }

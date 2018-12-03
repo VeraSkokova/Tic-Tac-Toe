@@ -1,6 +1,6 @@
 package ru.nsu.ccfit.skokova.tic_tac_toe.view;
 
-public interface MainView {
+public interface GameView {
     void drawNewField(int size);
 
     void showUserStep(int cellX, int cellY);
@@ -12,4 +12,6 @@ public interface MainView {
     void showComputerWin();
 
     void showDraw();
+
+    void drawGameField(int size);
 }

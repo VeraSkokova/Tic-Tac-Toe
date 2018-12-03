@@ -14,13 +14,13 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import ru.nsu.ccfit.skokova.tic_tac_toe.R;
-import ru.nsu.ccfit.skokova.tic_tac_toe.presenter.MainPresenter;
+import ru.nsu.ccfit.skokova.tic_tac_toe.presenter.GamePresenter;
 
 public class FieldSizeDialogFragment extends DialogFragment {
     @BindView(R.id.field_size_picker)
     NumberPicker fieldSizePicker;
 
-    private MainPresenter presenter;
+    private GamePresenter presenter;
 
     private Unbinder unbinder;
 
@@ -44,7 +44,7 @@ public class FieldSizeDialogFragment extends DialogFragment {
         unbinder.unbind();
     }
 
-    public void setPresenter(MainPresenter presenter) {
+    public void setPresenter(GamePresenter presenter) {
         this.presenter = presenter;
     }
 

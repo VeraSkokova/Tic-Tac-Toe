@@ -3,33 +3,35 @@ package ru.nsu.ccfit.skokova.tic_tac_toe.model.statistics;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
+import android.arch.persistence.room.TypeConverters;
 
 @Entity
 public class Record {
     @PrimaryKey(autoGenerate = true)
     public long id;
 
-    @ColumnInfo(name = "name")
-    private String name;
+    @ColumnInfo(name = "record_author")
+    @TypeConverters(RecordAuthorConverter.class)
+    private RecordAuthor recordAuthor;
 
     @ColumnInfo(name = "wins_count")
     private int winsCount;
 
-    public Record(String name, int winsCount) {
-        this.name = name;
+    public Record(RecordAuthor recordAuthor, int winsCount) {
+        this.recordAuthor = recordAuthor;
         this.winsCount = winsCount;
     }
 
-    public String getName() {
-        return name;
+    public RecordAuthor getRecordAuthor() {
+        return recordAuthor;
     }
 
     public int getWinsCount() {
         return winsCount;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setRecordAuthor(RecordAuthor recordAuthor) {
+        this.recordAuthor = recordAuthor;
     }
 
     public void setWinsCount(int winsCount) {

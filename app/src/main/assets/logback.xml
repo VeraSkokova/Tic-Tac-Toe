@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <!-- Create a logcat appender -->
-    <appender name="logcat" class="ch.qos.logback.classic.android.LogcatAppender">
+    <appender class="ch.qos.logback.classic.android.LogcatAppender" recordAuthor="logcat">
         <tagEncoder>
             <pattern>%logger{12}</pattern>
         </tagEncoder>

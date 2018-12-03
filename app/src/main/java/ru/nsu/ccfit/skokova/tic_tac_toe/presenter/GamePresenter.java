@@ -2,19 +2,19 @@ package ru.nsu.ccfit.skokova.tic_tac_toe.presenter;
 
 import ru.nsu.ccfit.skokova.tic_tac_toe.model.field.Cell;
 import ru.nsu.ccfit.skokova.tic_tac_toe.model.game.Game;
-import ru.nsu.ccfit.skokova.tic_tac_toe.view.MainView;
+import ru.nsu.ccfit.skokova.tic_tac_toe.view.GameView;
 
-public class MainPresenter {
-    private MainView view;
+public class GamePresenter {
+    private GameView view;
     private Game game;
 
-    public MainPresenter() {
+    public GamePresenter() {
         game = new Game();
         game.setPresenter(this);
     }
 
-    public void attachView(MainView mainView) {
-        this.view = mainView;
+    public void attachView(GameView gameView) {
+        this.view = gameView;
     }
 
     public void detachView() {
@@ -38,7 +38,11 @@ public class MainPresenter {
     }
 
     public void viewIsReady() {
-        onSizeChanged(3); //TODO : find best way to pass default size
+        game.startOrContinue();
+    }
+
+    public void resumeGame(int size) {
+        view.drawGameField(size);
     }
 
     public void onComputerStep(Cell cell) {
