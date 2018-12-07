@@ -68,4 +68,8 @@ public class GamePresenter {
     public void onMultiPlayerChosen() {
         game.multiPlayerGame();
     }
+
+    public void enableConnection() {
+        view.askForConnectionEnable();
+    }
 }

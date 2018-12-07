@@ -1,5 +1,8 @@
 package ru.nsu.ccfit.skokova.tic_tac_toe.view.fragment;
 
+import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,6 +23,8 @@ import ru.nsu.ccfit.skokova.tic_tac_toe.view.GameView;
 import ru.nsu.ccfit.skokova.tic_tac_toe.view.activity.MainActivity;
 
 public class GameFragment extends Fragment implements GameView {
+    private static final int REQUEST_ENABLE_BLUETOOTH = 10;
+
     @BindView(R.id.game_panel)
     TableLayout gamePanel;
 
@@ -79,6 +84,21 @@ public class GameFragment extends Fragment implements GameView {
     @Override
     public void showDraw() {
         showGameFinishDialog("Draw");
+    }
+
+    @Override
+    public void askForConnectionEnable() {
+        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        startActivityForResult(enableBtIntent, REQUEST_ENABLE_BLUETOOTH);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_ENABLE_BLUETOOTH) {
+            if (resultCode == Activity.RESULT_OK) {
+                presenter.onMultiPlayerChosen();
+            }
+        }
     }
 
     private void drawField(int size, boolean checkState) {

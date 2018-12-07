@@ -1,11 +1,15 @@
 package ru.nsu.ccfit.skokova.tic_tac_toe.model.game;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 
 import ru.nsu.ccfit.skokova.tic_tac_toe.model.Updater;
 import ru.nsu.ccfit.skokova.tic_tac_toe.model.field.Cell;
 import ru.nsu.ccfit.skokova.tic_tac_toe.model.field.Field;
 import ru.nsu.ccfit.skokova.tic_tac_toe.model.player.ComputerPlayer;
+import ru.nsu.ccfit.skokova.tic_tac_toe.model.player.NoMultiPlayerException;
 import ru.nsu.ccfit.skokova.tic_tac_toe.model.player.OpponentPlayer;
 import ru.nsu.ccfit.skokova.tic_tac_toe.model.player.Player;
 import ru.nsu.ccfit.skokova.tic_tac_toe.model.player.UserPlayer;
@@ -13,6 +17,8 @@ import ru.nsu.ccfit.skokova.tic_tac_toe.model.statistics.RecordAuthor;
 import ru.nsu.ccfit.skokova.tic_tac_toe.presenter.GamePresenter;
 
 public class Game {
+    private static final Logger logger = LoggerFactory.getLogger(Game.class);
+
     private static final int DEFAULT_SIZE = 3;
 
     private GamePresenter presenter;
@@ -68,8 +74,6 @@ public class Game {
         field = new Field(newSize);
         field.init();
 
-        //secondPlayer = new ComputerPlayer();
-
         judge = new Judge(newSize);
 
         isRunning = true;
@@ -83,8 +87,17 @@ public class Game {
     }
 
     public void multiPlayerGame() {
-        secondPlayer = new OpponentPlayer();
-        changeField(DEFAULT_SIZE);
+        try {
+            secondPlayer = new OpponentPlayer();
+            boolean isSetup = ((OpponentPlayer) secondPlayer).setup();
+            if (!isSetup) {
+                presenter.enableConnection();
+                return;
+            }
+            changeField(DEFAULT_SIZE);
+        } catch (NoMultiPlayerException e) {
+            logger.error("Bluetooth is not enabled");
+        }
     }
 
     public void setPresenter(GamePresenter presenter) {
