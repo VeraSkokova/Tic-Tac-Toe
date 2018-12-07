@@ -97,6 +97,7 @@ public class Game {
             changeField(DEFAULT_SIZE);
         } catch (NoMultiPlayerException e) {
             logger.error("Bluetooth is not enabled");
+            presenter.noMultiPlayer();
         }
     }
 

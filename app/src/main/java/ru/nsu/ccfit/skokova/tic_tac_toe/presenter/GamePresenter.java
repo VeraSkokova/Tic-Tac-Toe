@@ -72,4 +72,8 @@ public class GamePresenter {
     public void enableConnection() {
         view.askForConnectionEnable();
     }
+
+    public void noMultiPlayer() {
+        view.showNoMultiPlayer();
+    }
 }

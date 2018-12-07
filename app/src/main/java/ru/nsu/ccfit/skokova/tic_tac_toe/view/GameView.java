@@ -16,4 +16,6 @@ public interface GameView {
     void drawGameField(int size);
 
     void askForConnectionEnable();
+
+    void showNoMultiPlayer();
 }

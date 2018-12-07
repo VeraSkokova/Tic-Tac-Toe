@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -93,6 +94,11 @@ public class GameFragment extends Fragment implements GameView {
     }
 
     @Override
+    public void showNoMultiPlayer() {
+        showToast(getString(R.string.no_multi_player));
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_ENABLE_BLUETOOTH) {
             if (resultCode == Activity.RESULT_OK) {
@@ -138,5 +144,9 @@ public class GameFragment extends Fragment implements GameView {
         gameFinishDialogFragment.setArguments(bundle);
 
         gameFinishDialogFragment.show(getFragmentManager(), "GAME_FINISH_DIALOG");
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
     }
 }
