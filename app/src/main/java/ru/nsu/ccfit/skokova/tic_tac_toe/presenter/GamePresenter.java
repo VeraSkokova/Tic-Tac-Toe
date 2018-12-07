@@ -60,4 +60,12 @@ public class GamePresenter {
     public void onDraw() {
         view.showDraw();
     }
+
+    public void onSinglePlayerChosen() {
+        game.singlePlayerGame();
+    }
+
+    public void onMultiPlayerChosen() {
+        game.multiPlayerGame();
+    }
 }

@@ -68,7 +68,7 @@ public class Game {
         field = new Field(newSize);
         field.init();
 
-        secondPlayer = new ComputerPlayer();
+        //secondPlayer = new ComputerPlayer();
 
         judge = new Judge(newSize);
 
@@ -77,16 +77,14 @@ public class Game {
         presenter.onSizeChanged(newSize);
     }
 
-    public void changeMode() {
-        int fieldSize = field.getSize();
+    public void singlePlayerGame() {
+        secondPlayer = new ComputerPlayer();
+        changeField(DEFAULT_SIZE);
+    }
 
-        if (secondPlayer instanceof ComputerPlayer) {
-            secondPlayer = new OpponentPlayer();
-        } else {
-            secondPlayer = new ComputerPlayer();
-        }
-
-        changeField(fieldSize);
+    public void multiPlayerGame() {
+        secondPlayer = new OpponentPlayer();
+        changeField(DEFAULT_SIZE);
     }
 
     public void setPresenter(GamePresenter presenter) {
