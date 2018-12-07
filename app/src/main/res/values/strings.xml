@@ -10,4 +10,6 @@
     <string name="statistics">Statistics</string>
     <string name="wins_by_computer">Wins by computer</string>
     <string name="wins_by_user">Wins by user</string>
+    <string name="no_multi_player">Unfortunately, you can\'t play in multi-player mode</string>
+    <string name="location_explanation">App needs location permission to use Bluetooth (for multi-player game)</string>
 </resources>

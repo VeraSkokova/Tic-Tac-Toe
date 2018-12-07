@@ -6,7 +6,8 @@ import ru.nsu.ccfit.skokova.tic_tac_toe.model.Updater;
 import ru.nsu.ccfit.skokova.tic_tac_toe.model.field.Cell;
 import ru.nsu.ccfit.skokova.tic_tac_toe.model.field.Field;
 import ru.nsu.ccfit.skokova.tic_tac_toe.model.player.ComputerPlayer;
-import ru.nsu.ccfit.skokova.tic_tac_toe.model.player.ComputerStrategy;
+import ru.nsu.ccfit.skokova.tic_tac_toe.model.player.OpponentPlayer;
+import ru.nsu.ccfit.skokova.tic_tac_toe.model.player.Player;
 import ru.nsu.ccfit.skokova.tic_tac_toe.model.player.UserPlayer;
 import ru.nsu.ccfit.skokova.tic_tac_toe.model.statistics.RecordAuthor;
 import ru.nsu.ccfit.skokova.tic_tac_toe.presenter.GamePresenter;
@@ -19,7 +20,7 @@ public class Game {
     private Field field;
 
     private UserPlayer userPlayer;
-    private ComputerPlayer computerPlayer;
+    private Player secondPlayer;
 
     private Judge judge;
 
@@ -32,8 +33,7 @@ public class Game {
         field.init();
 
         userPlayer = new UserPlayer();
-        computerPlayer = new ComputerPlayer();
-        computerPlayer.setPlayerStrategy(new ComputerStrategy());
+        secondPlayer = new ComputerPlayer();
 
         judge = new Judge(field.getSize());
 
@@ -47,8 +47,7 @@ public class Game {
         field.init();
 
         userPlayer = new UserPlayer();
-        computerPlayer = new ComputerPlayer();
-        computerPlayer.setPlayerStrategy(new ComputerStrategy());
+        secondPlayer = new ComputerPlayer();
 
         judge = new Judge(fieldSize);
 
@@ -69,14 +68,25 @@ public class Game {
         field = new Field(newSize);
         field.init();
 
-        computerPlayer = new ComputerPlayer();
-        computerPlayer.setPlayerStrategy(new ComputerStrategy());
+        secondPlayer = new ComputerPlayer();
 
         judge = new Judge(newSize);
 
         isRunning = true;
 
         presenter.onSizeChanged(newSize);
+    }
+
+    public void changeMode() {
+        int fieldSize = field.getSize();
+
+        if (secondPlayer instanceof ComputerPlayer) {
+            secondPlayer = new OpponentPlayer();
+        } else {
+            secondPlayer = new ComputerPlayer();
+        }
+
+        changeField(fieldSize);
     }
 
     public void setPresenter(GamePresenter presenter) {
@@ -102,7 +112,7 @@ public class Game {
                 return;
             }
 
-            Cell computerStepCell = computerPlayer.makeStep(field, field.getCell(cellX, cellY));
+            Cell computerStepCell = secondPlayer.makeStep(field, field.getCell(cellX, cellY));
             judge.stepDone();
             presenter.onComputerStep(computerStepCell);
             if (judge.isWin(computerStepCell, field)) {

@@ -1,12 +1,19 @@
 package ru.nsu.ccfit.skokova.tic_tac_toe.view.activity;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -16,10 +23,12 @@ import ru.nsu.ccfit.skokova.tic_tac_toe.presenter.PresenterHolder;
 import ru.nsu.ccfit.skokova.tic_tac_toe.presenter.StatisticsPresenter;
 import ru.nsu.ccfit.skokova.tic_tac_toe.view.fragment.FieldSizeDialogFragment;
 import ru.nsu.ccfit.skokova.tic_tac_toe.view.fragment.GameFragment;
+import ru.nsu.ccfit.skokova.tic_tac_toe.view.fragment.GameModeDialogFragment;
 import ru.nsu.ccfit.skokova.tic_tac_toe.view.fragment.StatisticsFragment;
 
 public class MainActivity extends AppCompatActivity {
     public static final String MSG_KEY = "FINISH";
+    private static final int REQUEST_CODE_PERMISSION_LOCATION = 0;
 
     @BindView(R.id.main_layout)
     DrawerLayout drawerLayout;
@@ -71,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
                 fieldSizeDialogFragment.show(getSupportFragmentManager(), "FIELD_SIZE_DIALOG");
                 return true;
             case R.id.game_mode:
-                //...
+                onPermission();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -81,6 +90,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public Object onRetainCustomNonConfigurationInstance() {
         return presenterHolder;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_CODE_PERMISSION_LOCATION: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    showGameModeDialogFragment();
+                } else {
+                    showToast(getString(R.string.no_multi_player));
+                }
+            }
+        }
     }
 
     private void attachPresenter() {
@@ -112,5 +135,39 @@ public class MainActivity extends AppCompatActivity {
             default:
                 return false;
         }
+    }
+
+    private void onPermission() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.READ_CONTACTS)) {
+                showPermissionExplanation();
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                        REQUEST_CODE_PERMISSION_LOCATION);
+            }
+        } else {
+            showGameModeDialogFragment();
+        }
+    }
+
+    private void showGameModeDialogFragment() {
+        GameModeDialogFragment gameModeDialogFragment = new GameModeDialogFragment();
+        gameModeDialogFragment.setPresenter(presenterHolder.getGamePresenter());
+        gameModeDialogFragment.show(getSupportFragmentManager(), "GAME_MODE_FRAGMENT");
+    }
+
+    private void showPermissionExplanation() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.location_explanation)
+                .setNeutralButton(R.string.ok, (dialog, which) -> dialog.dismiss())
+                .create();
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }
