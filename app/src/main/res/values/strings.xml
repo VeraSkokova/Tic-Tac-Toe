@@ -13,4 +13,7 @@
     <string name="no_multi_player">Unfortunately, you can\'t play in multiplayer mode</string>
     <string name="location_explanation">App needs location permission to use Bluetooth (for multiplayer game)</string>
     <string name="choose_mode">Choose mode</string>
+    <string name="draw">Draw</string>
+    <string name="loose">You loose:(</string>
+    <string name="win">You won!!!</string>
 </resources>

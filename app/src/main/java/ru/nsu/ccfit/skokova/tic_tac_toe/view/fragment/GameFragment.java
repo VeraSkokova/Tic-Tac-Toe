@@ -25,6 +25,7 @@ import ru.nsu.ccfit.skokova.tic_tac_toe.view.activity.MainActivity;
 
 public class GameFragment extends Fragment implements GameView {
     private static final int REQUEST_ENABLE_BLUETOOTH = 10;
+    public static final int DISCOVERABLE_DURATION = 300;
 
     @BindView(R.id.game_panel)
     TableLayout gamePanel;
@@ -74,17 +75,17 @@ public class GameFragment extends Fragment implements GameView {
 
     @Override
     public void showUserWin() {
-        showGameFinishDialog("You won!!!");
+        showGameFinishDialog(getString(R.string.win));
     }
 
     @Override
     public void showComputerWin() {
-        showGameFinishDialog("You loose:(");
+        showGameFinishDialog(getString(R.string.loose));
     }
 
     @Override
     public void showDraw() {
-        showGameFinishDialog("Draw");
+        showGameFinishDialog(getString(R.string.draw));
     }
 
     @Override
@@ -102,9 +103,16 @@ public class GameFragment extends Fragment implements GameView {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_ENABLE_BLUETOOTH) {
             if (resultCode == Activity.RESULT_OK) {
-                presenter.onMultiPlayerChosen();
+                showDevicesList();
+            } else {
+                presenter.onSinglePlayerChosen();
             }
         }
+    }
+
+    private void showDevicesList() {
+        DevicesListFragment devicesListFragment = new DevicesListFragment();
+        devicesListFragment.show(getFragmentManager(), "DEVICES_LIST");
     }
 
     private void drawField(int size, boolean checkState) {

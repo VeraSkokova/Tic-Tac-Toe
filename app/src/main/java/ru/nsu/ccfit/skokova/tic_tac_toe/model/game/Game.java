@@ -158,4 +158,8 @@ public class Game {
         updater.updateRecord(RecordAuthor.USER);
         presenter.onUserWin();
     }
+
+    public void connectToOpponent() {
+
+    }
 }

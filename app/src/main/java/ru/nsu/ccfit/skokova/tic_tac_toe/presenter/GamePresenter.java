@@ -76,4 +76,8 @@ public class GamePresenter {
     public void noMultiPlayer() {
         view.showNoMultiPlayer();
     }
+
+    public void onConnectionAsked() {
+        game.connectToOpponent();
+    }
 }
