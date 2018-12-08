@@ -105,6 +105,11 @@ public class Game {
         presenter.onSizeChanged(newSize);
     }
 
+    public void reset() {
+        int fieldSize = field.getSize();
+        changeField(fieldSize);
+    }
+
     public void singlePlayerGame() {
         secondPlayer = new ComputerPlayer();
         isMultiPlayer = false;

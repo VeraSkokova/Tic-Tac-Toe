@@ -6,4 +6,5 @@
     <dimen name="stats_text_margin">4dp</dimen>
     <dimen name="device_info_margin">4dp</dimen>
     <dimen name="device_info_text_size">20sp</dimen>
+    <dimen name="fab_new_game_margin">8dp</dimen>
 </resources>

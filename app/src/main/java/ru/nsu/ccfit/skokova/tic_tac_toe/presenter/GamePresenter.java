@@ -93,4 +93,8 @@ public class GamePresenter {
     public void sizeChangingDenied() {
         view.showSizeChangingDenied();
     }
+
+    public void resetGame() {
+        game.reset();
+    }
 }

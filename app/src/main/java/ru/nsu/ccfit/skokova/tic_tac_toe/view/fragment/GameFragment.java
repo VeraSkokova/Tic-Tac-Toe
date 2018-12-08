@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 import ru.nsu.ccfit.skokova.tic_tac_toe.R;
 import ru.nsu.ccfit.skokova.tic_tac_toe.presenter.GamePresenter;
@@ -151,6 +152,11 @@ public class GameFragment extends Fragment implements GameView {
 
     public void setPresenter(GamePresenter presenter) {
         this.presenter = presenter;
+    }
+
+    @OnClick(R.id.fab_new_game)
+    void onNewGameClicked() {
+        presenter.resetGame();
     }
 
     private void onCellClicked(int x, int y) {
