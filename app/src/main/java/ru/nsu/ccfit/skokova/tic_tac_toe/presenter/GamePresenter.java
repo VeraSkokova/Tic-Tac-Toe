@@ -2,7 +2,6 @@ package ru.nsu.ccfit.skokova.tic_tac_toe.presenter;
 
 import android.bluetooth.BluetoothDevice;
 
-import ru.nsu.ccfit.skokova.tic_tac_toe.model.field.Cell;
 import ru.nsu.ccfit.skokova.tic_tac_toe.model.game.Game;
 import ru.nsu.ccfit.skokova.tic_tac_toe.view.GameView;
 
@@ -35,8 +34,8 @@ public class GamePresenter {
         game.performUserStep(x, y);
     }
 
-    public void onUserStep(int cellX, int cellY) {
-        view.showUserStep(cellX, cellY);
+    public void onCrossStep(int cellX, int cellY) {
+        view.onCrossStep(cellX, cellY);
     }
 
     public void viewIsReady() {
@@ -47,8 +46,8 @@ public class GamePresenter {
         view.drawGameField(size);
     }
 
-    public void onComputerStep(Cell cell) {
-        view.showComputerStep(cell.getCellX(), cell.getCellY());
+    public void onNoughtStep(int cellX, int cellY) {
+        view.showNoughtStep(cellX, cellY);
     }
 
     public void onUserWin() {

@@ -10,6 +10,7 @@ import java.util.List;
 
 import ru.nsu.ccfit.skokova.tic_tac_toe.model.Updater;
 import ru.nsu.ccfit.skokova.tic_tac_toe.model.field.Cell;
+import ru.nsu.ccfit.skokova.tic_tac_toe.model.field.CellState;
 import ru.nsu.ccfit.skokova.tic_tac_toe.model.field.Field;
 import ru.nsu.ccfit.skokova.tic_tac_toe.model.player.ComputerPlayer;
 import ru.nsu.ccfit.skokova.tic_tac_toe.model.player.NoMultiPlayerException;
@@ -37,7 +38,7 @@ public class Game {
 
     private Updater updater;
 
-    private StepMode stepMode;
+    private CellState cellState;
     private BluetoothManager bluetoothManager;
 
     public Game() {
@@ -46,7 +47,7 @@ public class Game {
 
         userPlayer = new UserPlayer();
         secondPlayer = new ComputerPlayer();
-        stepMode = StepMode.CROSS;
+        cellState = CellState.CROSS;
 
         judge = new Judge(field.getSize());
 
@@ -61,7 +62,7 @@ public class Game {
 
         userPlayer = new UserPlayer();
         secondPlayer = new ComputerPlayer();
-        stepMode = StepMode.CROSS;
+        cellState = CellState.CROSS;
 
         judge = new Judge(fieldSize);
 
@@ -91,7 +92,8 @@ public class Game {
 
     public void singlePlayerGame() {
         secondPlayer = new ComputerPlayer();
-        stepMode = StepMode.CROSS;
+        cellState = CellState.CROSS;
+        userPlayer.setStepMode(CellState.CROSS);
         bluetoothManager = null;
         changeField(DEFAULT_SIZE);
     }
@@ -99,7 +101,8 @@ public class Game {
     public void multiPlayerGame() {
         try {
             secondPlayer = new OpponentPlayer();
-            bluetoothManager = new BluetoothManager(this::setOpponentSocket, this::setOpponentSocket);
+            bluetoothManager = new BluetoothManager(this::setServerOpponentSocket,
+                    this::setClientOpponentSocket);
             boolean isSetup = ((OpponentPlayer) secondPlayer).setup();
             if (!isSetup) {
                 presenter.enableConnection();
@@ -123,27 +126,29 @@ public class Game {
         }
 
         Cell userStepCell = field.getCell(cellX, cellY);
-        StepMode isMyTurn = StepMode.CROSS;
+        CellState isMyTurn = CellState.CROSS;
         userPlayer.makeStep(field, userStepCell, this::stepDone);
 
         if (!isRunning) {
             return;
         }
 
-        isMyTurn = StepMode.NOUGHT;
+        isMyTurn = CellState.NOUGHT;
         secondPlayer.makeStep(field, field.getCell(cellX, cellY), this::stepDone);
     }
 
 
     public void connectToOpponent(BluetoothDevice device) {
-        stepMode = StepMode.NOUGHT;
-        ((OpponentPlayer) secondPlayer).setStepMode(StepMode.CROSS);
+        cellState = CellState.NOUGHT;
+        userPlayer.setStepMode(CellState.NOUGHT);
+        ((OpponentPlayer) secondPlayer).setStepMode(CellState.CROSS);
         startConnectorThread(device);
     }
 
     public void serverMode() {
-        stepMode = StepMode.CROSS;
-        ((OpponentPlayer) secondPlayer).setStepMode(StepMode.NOUGHT);
+        cellState = CellState.CROSS;
+        userPlayer.setStepMode(CellState.CROSS);
+        ((OpponentPlayer) secondPlayer).setStepMode(CellState.NOUGHT);
         startAcceptorThread();
     }
 
@@ -168,12 +173,12 @@ public class Game {
         presenter.onUserWin();
     }
 
-    private void stepDone(Cell cell, StepMode isUserTurn) {
+    private void stepDone(Cell cell, CellState isUserTurn) {
         judge.stepDone();
-        if (stepMode == isUserTurn) {
-            presenter.onUserStep(cell.getCellX(), cell.getCellY());
+        if (isUserTurn == CellState.CROSS) {
+            presenter.onCrossStep(cell.getCellX(), cell.getCellY());
         } else {
-            presenter.onComputerStep(cell);
+            presenter.onNoughtStep(cell.getCellX(), cell.getCellY());
         }
 
         if (judge.isWin(cell, field)) {
@@ -186,8 +191,8 @@ public class Game {
         }
     }
 
-    private void selectWinner(StepMode isUserTurn) {
-        if (stepMode == isUserTurn) {
+    private void selectWinner(CellState isUserTurn) {
+        if (cellState == isUserTurn) {
             userWins();
         } else {
             computerWins();
@@ -198,7 +203,13 @@ public class Game {
         bluetoothManager.startAcceptorThread();
     }
 
-    private void setOpponentSocket(BluetoothSocket socket) {
+    private void setClientOpponentSocket(BluetoothSocket socket) {
+        ((OpponentPlayer) secondPlayer).setSocket(socket);
+        ((OpponentPlayer) secondPlayer).setupStreams();
+        ((OpponentPlayer) secondPlayer).createReaderThread(this::stepDone);
+    }
+
+    private void setServerOpponentSocket(BluetoothSocket socket) {
         ((OpponentPlayer) secondPlayer).setSocket(socket);
         ((OpponentPlayer) secondPlayer).setupStreams();
     }

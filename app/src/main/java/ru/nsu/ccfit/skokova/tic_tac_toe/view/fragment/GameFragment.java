@@ -64,12 +64,13 @@ public class GameFragment extends Fragment implements GameView {
     }
 
     @Override
-    public void showUserStep(int cellX, int cellY) {
-        buttons[cellX][cellY].setImageResource(R.drawable.ic_cross_black_24dp);
+    public void onCrossStep(int cellX, int cellY) {
+        getActivity().runOnUiThread(() -> buttons[cellX][cellY]
+                .setImageResource(R.drawable.ic_cross_black_24dp));
     }
 
     @Override
-    public void showComputerStep(int cellX, int cellY) {
+    public void showNoughtStep(int cellX, int cellY) {
         getActivity().runOnUiThread(() -> buttons[cellX][cellY]
                 .setImageResource(R.drawable.ic_circle_black_24dp));
     }

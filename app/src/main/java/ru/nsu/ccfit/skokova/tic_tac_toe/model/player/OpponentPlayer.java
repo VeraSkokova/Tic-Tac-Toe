@@ -11,8 +11,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import ru.nsu.ccfit.skokova.tic_tac_toe.model.field.Cell;
+import ru.nsu.ccfit.skokova.tic_tac_toe.model.field.CellState;
 import ru.nsu.ccfit.skokova.tic_tac_toe.model.field.Field;
-import ru.nsu.ccfit.skokova.tic_tac_toe.model.game.StepMode;
 
 public class OpponentPlayer implements Player {
     private static final Logger logger = LoggerFactory.getLogger(OpponentPlayer.class);
@@ -23,11 +23,19 @@ public class OpponentPlayer implements Player {
     private ObjectInputStream objectInputStream;
     private ObjectOutputStream objectOutputStream;
 
-    private StepMode stepMode;
+    private CellState stepMode;
 
     @Override
     public void makeStep(Field field, Cell lastUserStepCell, StepCallback stepCallback) {
-        new Thread(new CellReaderWriter(lastUserStepCell, stepCallback)).start();
+        createWriterThread(lastUserStepCell, stepCallback);
+    }
+
+    private void createWriterThread(Cell lastUserStepCell, StepCallback stepCallback) {
+        new Thread(new CellWriter(lastUserStepCell, stepCallback)).start();
+    }
+
+    public void createReaderThread(StepCallback stepCallback) {
+        new Thread(new CellReader(stepCallback)).start();
     }
 
     public boolean setup() throws NoMultiPlayerException {
@@ -56,7 +64,7 @@ public class OpponentPlayer implements Player {
         return true;
     }
 
-    public void setStepMode(StepMode stepMode) {
+    public void setStepMode(CellState stepMode) {
         this.stepMode = stepMode;
     }
 
@@ -73,12 +81,12 @@ public class OpponentPlayer implements Player {
         return (Cell) objectInputStream.readObject();
     }
 
-    private class CellReaderWriter implements Runnable {
+    private class CellWriter implements Runnable {
 
         private Cell lastUserStepCell;
         private StepCallback stepCallback;
 
-        CellReaderWriter(Cell lastUserStepCell, StepCallback stepCallback) {
+        CellWriter(Cell lastUserStepCell, StepCallback stepCallback) {
             this.lastUserStepCell = lastUserStepCell;
             this.stepCallback = stepCallback;
         }
@@ -86,13 +94,26 @@ public class OpponentPlayer implements Player {
         @Override
         public void run() {
             try {
-                if (stepMode == StepMode.CROSS) {
-                    sendCell(lastUserStepCell);
-                }
+                sendCell(lastUserStepCell);
+                createReaderThread(stepCallback);
+            } catch (IOException e) {
+                logger.error("Error occurred when reading cell: {}", e.getMessage());
+            }
+        }
+    }
+
+    private class CellReader implements Runnable {
+
+        private StepCallback stepCallback;
+
+        CellReader(StepCallback stepCallback) {
+            this.stepCallback = stepCallback;
+        }
+
+        @Override
+        public void run() {
+            try {
                 stepCallback.onStepMade(receiveCell(), stepMode);
-                if (stepMode == StepMode.NOUGHT) {
-                    sendCell(lastUserStepCell);
-                }
             } catch (IOException | ClassNotFoundException e) {
                 logger.error("Error occurred when reading cell: {}", e.getMessage());
             }
