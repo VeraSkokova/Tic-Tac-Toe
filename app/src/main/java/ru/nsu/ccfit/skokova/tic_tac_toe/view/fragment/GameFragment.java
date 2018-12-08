@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatImageButton;
@@ -28,8 +29,12 @@ import ru.nsu.ccfit.skokova.tic_tac_toe.view.activity.MainActivity;
 public class GameFragment extends Fragment implements GameView {
     public static final int DISCOVERABLE_DURATION = 300;
     private static final int REQUEST_ENABLE_BLUETOOTH = 10;
+
     @BindView(R.id.game_panel)
     TableLayout gamePanel;
+
+    @BindView(R.id.fab_new_game)
+    FloatingActionButton newGameButton;
 
     private Unbinder unbinder;
 
@@ -65,7 +70,7 @@ public class GameFragment extends Fragment implements GameView {
     }
 
     @Override
-    public void onCrossStep(int cellX, int cellY) {
+    public void showCrossStep(int cellX, int cellY) {
         getActivity().runOnUiThread(() -> buttons[cellX][cellY]
                 .setImageResource(R.drawable.ic_cross_black_24dp));
     }
@@ -112,6 +117,21 @@ public class GameFragment extends Fragment implements GameView {
         showToast(getString(R.string.field_change_denied_multiplayer));
     }
 
+    @OnClick(R.id.fab_new_game)
+    void onNewGameClicked() {
+        presenter.resetGame();
+    }
+
+    @Override
+    public void showSinglePlayerView() {
+        newGameButton.show();
+    }
+
+    @Override
+    public void showMultiPlayerView() {
+        newGameButton.hide();
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_ENABLE_BLUETOOTH) {
@@ -152,11 +172,6 @@ public class GameFragment extends Fragment implements GameView {
 
     public void setPresenter(GamePresenter presenter) {
         this.presenter = presenter;
-    }
-
-    @OnClick(R.id.fab_new_game)
-    void onNewGameClicked() {
-        presenter.resetGame();
     }
 
     private void onCellClicked(int x, int y) {

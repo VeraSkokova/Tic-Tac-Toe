@@ -35,7 +35,7 @@ public class GamePresenter {
     }
 
     public void onCrossStep(int cellX, int cellY) {
-        view.onCrossStep(cellX, cellY);
+        view.showCrossStep(cellX, cellY);
     }
 
     public void viewIsReady() {
@@ -96,5 +96,13 @@ public class GamePresenter {
 
     public void resetGame() {
         game.reset();
+    }
+
+    public void modeChangedToMulti() {
+        view.showMultiPlayerView();
+    }
+
+    public void modeChangedToSingle() {
+        view.showSinglePlayerView();
     }
 }

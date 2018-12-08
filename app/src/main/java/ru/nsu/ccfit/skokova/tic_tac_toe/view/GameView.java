@@ -3,7 +3,7 @@ package ru.nsu.ccfit.skokova.tic_tac_toe.view;
 public interface GameView {
     void drawNewField(int size);
 
-    void onCrossStep(int cellX, int cellY);
+    void showCrossStep(int cellX, int cellY);
 
     void showNoughtStep(int cellX, int cellY);
 
@@ -22,4 +22,8 @@ public interface GameView {
     void showWaitOrConnect();
 
     void showSizeChangingDenied();
+
+    void showSinglePlayerView();
+
+    void showMultiPlayerView();
 }

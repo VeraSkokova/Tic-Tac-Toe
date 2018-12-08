@@ -119,6 +119,7 @@ public class Game {
         userPlayer.setStepMode(CellState.CROSS);
         bluetoothManager = null;
         changeField(DEFAULT_SIZE);
+        presenter.modeChangedToSingle();
     }
 
     public void multiPlayerGame() {
@@ -126,6 +127,7 @@ public class Game {
             isConnected = false;
             secondPlayer = new OpponentPlayer();
             isMultiPlayer = true;
+            presenter.modeChangedToMulti();
 
             bluetoothManager = new BluetoothManager(this::setServerOpponentSocket,
                     this::setClientOpponentSocket);
@@ -136,7 +138,7 @@ public class Game {
             }
             presenter.askForServerOrClientMode();
 
-            changeField(DEFAULT_SIZE);
+            changeFieldIngnoresMultiPlayer(DEFAULT_SIZE);
             ((OpponentPlayer) secondPlayer).setField(field);
         } catch (NoMultiPlayerException e) {
             logger.error("Bluetooth is not enabled");
@@ -259,5 +261,18 @@ public class Game {
 
     private void startConnectorThread(BluetoothDevice device) {
         bluetoothManager.startConnectorThread(device);
+    }
+
+    //To change field size when switching to multiplayer mode
+    private void changeFieldIngnoresMultiPlayer(int newSize) {
+        field = new Field(newSize);
+        field.init();
+
+        judge = new Judge(newSize);
+
+        isRunning = true;
+        canPerformStep = true;
+
+        presenter.onSizeChanged(newSize);
     }
 }
