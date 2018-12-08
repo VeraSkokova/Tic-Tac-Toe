@@ -1,8 +1,9 @@
 package ru.nsu.ccfit.skokova.tic_tac_toe.model.field;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Cell {
+public class Cell implements Serializable {
     private final int cellX;
     private final int cellY;
     private CellState cellState;

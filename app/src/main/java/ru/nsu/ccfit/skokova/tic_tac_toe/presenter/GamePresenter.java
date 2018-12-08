@@ -1,5 +1,7 @@
 package ru.nsu.ccfit.skokova.tic_tac_toe.presenter;
 
+import android.bluetooth.BluetoothDevice;
+
 import ru.nsu.ccfit.skokova.tic_tac_toe.model.field.Cell;
 import ru.nsu.ccfit.skokova.tic_tac_toe.model.game.Game;
 import ru.nsu.ccfit.skokova.tic_tac_toe.view.GameView;
@@ -77,7 +79,15 @@ public class GamePresenter {
         view.showNoMultiPlayer();
     }
 
-    public void onConnectionAsked() {
-        game.connectToOpponent();
+    public void onConnectionAsked(BluetoothDevice device) {
+        game.connectToOpponent(device);
+    }
+
+    public void onWaitForGame() {
+        game.serverMode();
+    }
+
+    public void askForServerOrClientMode() {
+        view.showWaitOrConnect();
     }
 }

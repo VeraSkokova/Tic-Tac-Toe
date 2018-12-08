@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatImageButton;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,9 +25,8 @@ import ru.nsu.ccfit.skokova.tic_tac_toe.view.GameView;
 import ru.nsu.ccfit.skokova.tic_tac_toe.view.activity.MainActivity;
 
 public class GameFragment extends Fragment implements GameView {
-    private static final int REQUEST_ENABLE_BLUETOOTH = 10;
     public static final int DISCOVERABLE_DURATION = 300;
-
+    private static final int REQUEST_ENABLE_BLUETOOTH = 10;
     @BindView(R.id.game_panel)
     TableLayout gamePanel;
 
@@ -70,7 +70,8 @@ public class GameFragment extends Fragment implements GameView {
 
     @Override
     public void showComputerStep(int cellX, int cellY) {
-        buttons[cellX][cellY].setImageResource(R.drawable.ic_circle_black_24dp);
+        getActivity().runOnUiThread(() -> buttons[cellX][cellY]
+                .setImageResource(R.drawable.ic_circle_black_24dp));
     }
 
     @Override
@@ -100,10 +101,15 @@ public class GameFragment extends Fragment implements GameView {
     }
 
     @Override
+    public void showWaitOrConnect() {
+        showGamePossibilitiesDialog();
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_ENABLE_BLUETOOTH) {
             if (resultCode == Activity.RESULT_OK) {
-                showDevicesList();
+                showGamePossibilitiesDialog();
             } else {
                 presenter.onSinglePlayerChosen();
             }
@@ -112,6 +118,7 @@ public class GameFragment extends Fragment implements GameView {
 
     private void showDevicesList() {
         DevicesListFragment devicesListFragment = new DevicesListFragment();
+        devicesListFragment.setPresenter(presenter);
         devicesListFragment.show(getFragmentManager(), "DEVICES_LIST");
     }
 
@@ -152,6 +159,25 @@ public class GameFragment extends Fragment implements GameView {
         gameFinishDialogFragment.setArguments(bundle);
 
         gameFinishDialogFragment.show(getFragmentManager(), "GAME_FINISH_DIALOG");
+    }
+
+    private void showGamePossibilitiesDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(R.string.possibilities)
+                .setPositiveButton(getString(R.string.wait), (dialog, which) -> {
+                    ensureDiscoverable();
+                    presenter.onWaitForGame();
+                })
+                .setNegativeButton(getString(R.string.find_friend), (dialog, which) -> showDevicesList())
+                .create()
+                .show();
+    }
+
+    private void ensureDiscoverable() {
+        Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+        discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+        startActivity(discoverableIntent);
+
     }
 
     private void showToast(String message) {

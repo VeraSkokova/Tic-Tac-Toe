@@ -57,7 +57,10 @@ public class DevicesListFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.fragment_devices_list, container, false);
         unbinder = ButterKnife.bind(this, view);
 
-        devicesAdapter = new DevicesAdapter(device -> presenter.onConnectionAsked());
+        devicesAdapter = new DevicesAdapter(device -> {
+            presenter.onConnectionAsked(device);
+            dismiss();
+        });
         devicesList.setAdapter(devicesAdapter);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
@@ -93,6 +96,10 @@ public class DevicesListFragment extends DialogFragment {
         getActivity().unregisterReceiver(broadcastReceiver);
         bluetoothAdapter.cancelDiscovery();
         logger.info("Discovery cancelled");
+    }
+
+    public void setPresenter(GamePresenter presenter) {
+        this.presenter = presenter;
     }
 
     private void createBroadcastReceiver() {

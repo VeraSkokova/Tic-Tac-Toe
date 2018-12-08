@@ -1,5 +1,8 @@
 package ru.nsu.ccfit.skokova.tic_tac_toe.model.game;
 
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,12 +37,16 @@ public class Game {
 
     private Updater updater;
 
+    private StepMode stepMode;
+    private BluetoothManager bluetoothManager;
+
     public Game() {
         field = new Field(DEFAULT_SIZE);
         field.init();
 
         userPlayer = new UserPlayer();
         secondPlayer = new ComputerPlayer();
+        stepMode = StepMode.CROSS;
 
         judge = new Judge(field.getSize());
 
@@ -54,6 +61,7 @@ public class Game {
 
         userPlayer = new UserPlayer();
         secondPlayer = new ComputerPlayer();
+        stepMode = StepMode.CROSS;
 
         judge = new Judge(fieldSize);
 
@@ -83,17 +91,21 @@ public class Game {
 
     public void singlePlayerGame() {
         secondPlayer = new ComputerPlayer();
+        stepMode = StepMode.CROSS;
+        bluetoothManager = null;
         changeField(DEFAULT_SIZE);
     }
 
     public void multiPlayerGame() {
         try {
             secondPlayer = new OpponentPlayer();
+            bluetoothManager = new BluetoothManager(this::setOpponentSocket, this::setOpponentSocket);
             boolean isSetup = ((OpponentPlayer) secondPlayer).setup();
             if (!isSetup) {
                 presenter.enableConnection();
                 return;
             }
+            presenter.askForServerOrClientMode();
             changeField(DEFAULT_SIZE);
         } catch (NoMultiPlayerException e) {
             logger.error("Bluetooth is not enabled");
@@ -111,31 +123,28 @@ public class Game {
         }
 
         Cell userStepCell = field.getCell(cellX, cellY);
-        if (userPlayer.makeStep(field, userStepCell) != null) {
-            judge.stepDone();
-            presenter.onUserStep(cellX, cellY);
-            if (judge.isWin(userStepCell, field)) {
-                userWins();
-                return;
-            }
+        StepMode isMyTurn = StepMode.CROSS;
+        userPlayer.makeStep(field, userStepCell, this::stepDone);
 
-            if (judge.isDraw()) {
-                draw();
-                return;
-            }
-
-            Cell computerStepCell = secondPlayer.makeStep(field, field.getCell(cellX, cellY));
-            judge.stepDone();
-            presenter.onComputerStep(computerStepCell);
-            if (judge.isWin(computerStepCell, field)) {
-                computerWins();
-                return;
-            }
-
-            if (judge.isDraw()) {
-                draw();
-            }
+        if (!isRunning) {
+            return;
         }
+
+        isMyTurn = StepMode.NOUGHT;
+        secondPlayer.makeStep(field, field.getCell(cellX, cellY), this::stepDone);
+    }
+
+
+    public void connectToOpponent(BluetoothDevice device) {
+        stepMode = StepMode.NOUGHT;
+        ((OpponentPlayer) secondPlayer).setStepMode(StepMode.CROSS);
+        startConnectorThread(device);
+    }
+
+    public void serverMode() {
+        stepMode = StepMode.CROSS;
+        ((OpponentPlayer) secondPlayer).setStepMode(StepMode.NOUGHT);
+        startAcceptorThread();
     }
 
     public List<Cell> getCells() {
@@ -159,7 +168,42 @@ public class Game {
         presenter.onUserWin();
     }
 
-    public void connectToOpponent() {
+    private void stepDone(Cell cell, StepMode isUserTurn) {
+        judge.stepDone();
+        if (stepMode == isUserTurn) {
+            presenter.onUserStep(cell.getCellX(), cell.getCellY());
+        } else {
+            presenter.onComputerStep(cell);
+        }
 
+        if (judge.isWin(cell, field)) {
+            selectWinner(isUserTurn);
+            return;
+        }
+
+        if (judge.isDraw()) {
+            draw();
+        }
+    }
+
+    private void selectWinner(StepMode isUserTurn) {
+        if (stepMode == isUserTurn) {
+            userWins();
+        } else {
+            computerWins();
+        }
+    }
+
+    private void startAcceptorThread() {
+        bluetoothManager.startAcceptorThread();
+    }
+
+    private void setOpponentSocket(BluetoothSocket socket) {
+        ((OpponentPlayer) secondPlayer).setSocket(socket);
+        ((OpponentPlayer) secondPlayer).setupStreams();
+    }
+
+    private void startConnectorThread(BluetoothDevice device) {
+        bluetoothManager.startConnectorThread(device);
     }
 }

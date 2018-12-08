@@ -18,4 +18,6 @@ public interface GameView {
     void askForConnectionEnable();
 
     void showNoMultiPlayer();
+
+    void showWaitOrConnect();
 }
