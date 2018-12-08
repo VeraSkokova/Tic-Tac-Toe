@@ -37,6 +37,7 @@ public class Game {
     private boolean isRunning;
     private boolean canPerformStep;
     private boolean isMultiPlayer;
+    private boolean isConnected;
 
     private Updater updater;
 
@@ -58,6 +59,7 @@ public class Game {
         isRunning = true;
         canPerformStep = true;
         isMultiPlayer = false;
+        isConnected = true;
     }
 
     public Game(int fieldSize) {
@@ -75,6 +77,7 @@ public class Game {
         isRunning = true;
         canPerformStep = true;
         isMultiPlayer = false;
+        isConnected = true;
     }
 
     public void startOrContinue() {
@@ -100,6 +103,8 @@ public class Game {
     public void singlePlayerGame() {
         secondPlayer = new ComputerPlayer();
         isMultiPlayer = false;
+        isConnected = true;
+
         cellState = CellState.CROSS;
         userPlayer.setStepMode(CellState.CROSS);
         bluetoothManager = null;
@@ -108,8 +113,10 @@ public class Game {
 
     public void multiPlayerGame() {
         try {
+            isConnected = false;
             secondPlayer = new OpponentPlayer();
             isMultiPlayer = true;
+
             bluetoothManager = new BluetoothManager(this::setServerOpponentSocket,
                     this::setClientOpponentSocket);
             boolean isSetup = ((OpponentPlayer) secondPlayer).setup();
@@ -118,6 +125,7 @@ public class Game {
                 return;
             }
             presenter.askForServerOrClientMode();
+
             changeField(DEFAULT_SIZE);
             ((OpponentPlayer) secondPlayer).setField(field);
         } catch (NoMultiPlayerException e) {
@@ -131,7 +139,7 @@ public class Game {
     }
 
     public void performUserStep(int cellX, int cellY) {
-        if (!isRunning || !canPerformStep) {
+        if (!isRunning || !canPerformStep || !isConnected) {
             return;
         }
 
@@ -230,11 +238,13 @@ public class Game {
         ((OpponentPlayer) secondPlayer).setSocket(socket);
         ((OpponentPlayer) secondPlayer).setupStreams();
         ((OpponentPlayer) secondPlayer).createReaderThread(this::stepDone);
+        isConnected = true;
     }
 
     private void setServerOpponentSocket(BluetoothSocket socket) {
         ((OpponentPlayer) secondPlayer).setSocket(socket);
         ((OpponentPlayer) secondPlayer).setupStreams();
+        isConnected = true;
     }
 
     private void startConnectorThread(BluetoothDevice device) {
