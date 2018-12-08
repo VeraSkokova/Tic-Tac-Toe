@@ -24,13 +24,14 @@ public class OpponentPlayer implements Player {
     private ObjectOutputStream objectOutputStream;
 
     private CellState stepMode;
+    private Field field;
 
     @Override
     public void makeStep(Field field, Cell lastUserStepCell, StepCallback stepCallback) {
         createWriterThread(lastUserStepCell, stepCallback);
     }
 
-    private void createWriterThread(Cell lastUserStepCell, StepCallback stepCallback) {
+    public void createWriterThread(Cell lastUserStepCell, StepCallback stepCallback) {
         new Thread(new CellWriter(lastUserStepCell, stepCallback)).start();
     }
 
@@ -68,6 +69,10 @@ public class OpponentPlayer implements Player {
         this.stepMode = stepMode;
     }
 
+    public void setField(Field field) {
+        this.field = field;
+    }
+
     public void setSocket(BluetoothSocket socket) {
         this.socket = socket;
     }
@@ -95,15 +100,20 @@ public class OpponentPlayer implements Player {
         public void run() {
             try {
                 sendCell(lastUserStepCell);
-                createReaderThread(stepCallback);
+                createReaderThreadIfNecessary();
             } catch (IOException e) {
                 logger.error("Error occurred when reading cell: {}", e.getMessage());
+            }
+        }
+
+        private void createReaderThreadIfNecessary() {
+            if (stepCallback != null) {
+                createReaderThread(stepCallback);
             }
         }
     }
 
     private class CellReader implements Runnable {
-
         private StepCallback stepCallback;
 
         CellReader(StepCallback stepCallback) {
@@ -113,7 +123,10 @@ public class OpponentPlayer implements Player {
         @Override
         public void run() {
             try {
-                stepCallback.onStepMade(receiveCell(), stepMode);
+                Cell receivedCell = receiveCell();
+                CellState receivedState = receivedCell.getCellState();
+                field.getCell(receivedCell.getCellX(), receivedCell.getCellY()).setCellState(receivedState);
+                stepCallback.onStepMade(receivedCell, stepMode);
             } catch (IOException | ClassNotFoundException e) {
                 logger.error("Error occurred when reading cell: {}", e.getMessage());
             }

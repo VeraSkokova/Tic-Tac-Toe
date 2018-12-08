@@ -35,6 +35,8 @@ public class Game {
     private Judge judge;
 
     private boolean isRunning;
+    private boolean canPerformStep;
+    private boolean isMultiPlayer;
 
     private Updater updater;
 
@@ -54,6 +56,8 @@ public class Game {
         updater = new RecordsUpdater();
 
         isRunning = true;
+        canPerformStep = true;
+        isMultiPlayer = false;
     }
 
     public Game(int fieldSize) {
@@ -69,6 +73,8 @@ public class Game {
         updater = new RecordsUpdater();
 
         isRunning = true;
+        canPerformStep = true;
+        isMultiPlayer = false;
     }
 
     public void startOrContinue() {
@@ -86,12 +92,14 @@ public class Game {
         judge = new Judge(newSize);
 
         isRunning = true;
+        canPerformStep = true;
 
         presenter.onSizeChanged(newSize);
     }
 
     public void singlePlayerGame() {
         secondPlayer = new ComputerPlayer();
+        isMultiPlayer = false;
         cellState = CellState.CROSS;
         userPlayer.setStepMode(CellState.CROSS);
         bluetoothManager = null;
@@ -101,6 +109,7 @@ public class Game {
     public void multiPlayerGame() {
         try {
             secondPlayer = new OpponentPlayer();
+            isMultiPlayer = true;
             bluetoothManager = new BluetoothManager(this::setServerOpponentSocket,
                     this::setClientOpponentSocket);
             boolean isSetup = ((OpponentPlayer) secondPlayer).setup();
@@ -110,6 +119,7 @@ public class Game {
             }
             presenter.askForServerOrClientMode();
             changeField(DEFAULT_SIZE);
+            ((OpponentPlayer) secondPlayer).setField(field);
         } catch (NoMultiPlayerException e) {
             logger.error("Bluetooth is not enabled");
             presenter.noMultiPlayer();
@@ -121,15 +131,16 @@ public class Game {
     }
 
     public void performUserStep(int cellX, int cellY) {
-        if (!isRunning) {
+        if (!isRunning || !canPerformStep) {
             return;
         }
 
         Cell userStepCell = field.getCell(cellX, cellY);
         CellState isMyTurn = CellState.CROSS;
         userPlayer.makeStep(field, userStepCell, this::stepDone);
+        canPerformStep = false;
 
-        if (!isRunning) {
+        if (!isRunning) { //finish game
             return;
         }
 
@@ -139,6 +150,7 @@ public class Game {
 
 
     public void connectToOpponent(BluetoothDevice device) {
+        canPerformStep = false;
         cellState = CellState.NOUGHT;
         userPlayer.setStepMode(CellState.NOUGHT);
         ((OpponentPlayer) secondPlayer).setStepMode(CellState.CROSS);
@@ -146,6 +158,7 @@ public class Game {
     }
 
     public void serverMode() {
+        canPerformStep = true;
         cellState = CellState.CROSS;
         userPlayer.setStepMode(CellState.CROSS);
         ((OpponentPlayer) secondPlayer).setStepMode(CellState.NOUGHT);
@@ -183,11 +196,21 @@ public class Game {
 
         if (judge.isWin(cell, field)) {
             selectWinner(isUserTurn);
+            sendGameFinishedIfNecessary(cell);
             return;
         }
 
         if (judge.isDraw()) {
             draw();
+            sendGameFinishedIfNecessary(cell);
+            return;
+        }
+        canPerformStep = true;
+    }
+
+    private void sendGameFinishedIfNecessary(Cell cell) {
+        if (isMultiPlayer) {
+            ((OpponentPlayer) secondPlayer).createWriterThread(cell, null);
         }
     }
 
