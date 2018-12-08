@@ -138,7 +138,7 @@ public class Game {
             }
             presenter.askForServerOrClientMode();
 
-            changeFieldIngnoresMultiPlayer(DEFAULT_SIZE);
+            changeFieldIgnoresMultiPlayer(DEFAULT_SIZE);
             ((OpponentPlayer) secondPlayer).setField(field);
         } catch (NoMultiPlayerException e) {
             logger.error("Bluetooth is not enabled");
@@ -264,7 +264,7 @@ public class Game {
     }
 
     //To change field size when switching to multiplayer mode
-    private void changeFieldIngnoresMultiPlayer(int newSize) {
+    private void changeFieldIgnoresMultiPlayer(int newSize) {
         field = new Field(newSize);
         field.init();
 

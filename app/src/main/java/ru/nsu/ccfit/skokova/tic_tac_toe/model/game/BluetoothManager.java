@@ -40,10 +40,6 @@ public class BluetoothManager {
         connectorThread.start();
     }
 
-    private void manageConnectedSocket(BluetoothSocket socket) {
-        serverConnectionCallback.onConnectionSet(socket);
-    }
-
     private class AcceptRunnable implements Runnable {
         private final BluetoothServerSocket serverSocket;
 
