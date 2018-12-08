@@ -107,6 +107,11 @@ public class GameFragment extends Fragment implements GameView {
     }
 
     @Override
+    public void showSizeChangingDenied() {
+        showToast(getString(R.string.field_change_denied_multiplayer));
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_ENABLE_BLUETOOTH) {
             if (resultCode == Activity.RESULT_OK) {

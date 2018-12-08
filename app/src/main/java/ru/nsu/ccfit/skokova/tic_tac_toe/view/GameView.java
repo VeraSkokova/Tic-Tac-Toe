@@ -20,4 +20,6 @@ public interface GameView {
     void showNoMultiPlayer();
 
     void showWaitOrConnect();
+
+    void showSizeChangingDenied();
 }

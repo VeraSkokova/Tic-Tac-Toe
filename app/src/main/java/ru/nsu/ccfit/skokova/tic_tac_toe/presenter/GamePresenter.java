@@ -89,4 +89,8 @@ public class GamePresenter {
     public void askForServerOrClientMode() {
         view.showWaitOrConnect();
     }
+
+    public void sizeChangingDenied() {
+        view.showSizeChangingDenied();
+    }
 }

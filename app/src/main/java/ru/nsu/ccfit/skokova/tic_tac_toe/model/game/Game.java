@@ -89,6 +89,11 @@ public class Game {
     }
 
     public void changeField(int newSize) {
+        if (isMultiPlayer) {
+            presenter.sizeChangingDenied();
+            return;
+        }
+
         field = new Field(newSize);
         field.init();
 

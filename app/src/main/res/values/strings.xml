@@ -19,4 +19,5 @@
     <string name="possibilities">You can wait for a friend or connect to one of them</string>
     <string name="wait">Wait</string>
     <string name="find_friend">Find a friend</string>
+    <string name="field_change_denied_multiplayer">Sorry, changing field size is not allowed in multiplayer mode</string>
 </resources>
